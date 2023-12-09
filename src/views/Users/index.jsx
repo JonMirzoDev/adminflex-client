@@ -20,13 +20,19 @@ export default function Users() {
   const [isActionDisabled, setIsActionDisabled] = useState(false)
 
   useEffect(() => {
+    if (!isLoading) {
+      const isAllBlocked = users?.every((u) => u.status === 'blocked')
+      if (isAllBlocked) {
+        authStore.logout()
+      }
+    }
     const currentUser = users?.find((u) => u.email === store?.userData?.email)
     if (currentUser?.status === 'blocked') {
       setIsActionDisabled(true)
     } else {
       setIsActionDisabled(false)
     }
-  }, [users, store?.userData])
+  }, [users, store?.userData, isLoading])
 
   const actionableUsers = Object.entries(checkedUsers)
     // eslint-disable-next-line no-unused-vars
