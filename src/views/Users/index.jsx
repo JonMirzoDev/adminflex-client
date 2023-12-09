@@ -1,4 +1,4 @@
-import { useGetUsers } from '../../services/user.service'
+import { useDeleteUser, useGetUsers } from '../../services/user.service'
 import {
   BsFillPersonXFill,
   BsFillPersonCheckFill,
@@ -8,12 +8,18 @@ import authStore from '../../store/auth.store'
 import { useState } from 'react'
 import styles from './style.module.scss'
 import UserTable from './UserTable'
+import { useQueryClient } from 'react-query'
 
 export default function Users() {
   const { data: users, isLoading } = useGetUsers()
+  const { mutate: deleteUser, isLoading: isDeleting } = useDeleteUser()
   const [checkedUsers, setCheckedUsers] = useState({})
   const store = authStore
-  console.log('users: ', users)
+  const queryClient = useQueryClient()
+
+  const actionableUsers = Object.entries(checkedUsers)
+    .filter(([_, isChecked]) => isChecked)
+    .map(([userId]) => userId)
 
   const handleCheck = (userId) => {
     setCheckedUsers((prev) => ({
@@ -30,18 +36,33 @@ export default function Users() {
     console.log('Unblock user:', userId)
   }
 
-  const handleDelete = (userId) => {
-    console.log('Delete user:', userId)
+  const handleBulkDelete = () => {
+    if (actionableUsers.length === 0) return
+
+    actionableUsers.forEach((userId) => {
+      deleteUser(userId, {
+        onSuccess: () => {
+          queryClient.invalidateQueries('users')
+        },
+        onError: (err) => {
+          console.log('delete err: ', err)
+        }
+      })
+    })
   }
 
-  if (isLoading) return <div>Loading...</div>
+  const handleLogout = () => {
+    authStore.logout()
+  }
 
   return (
     <div className='container mt-4'>
       <div className='d-flex justify-content-between align-items-center mb-4'>
         <div className='d-flex align-items-center justify-content-end w-100 fs-4'>
           <span>Hello, {store?.userData?.name}!</span>
-          <button className='btn btn-link fs-4'>Logout</button>
+          <button className='btn btn-link fs-4' onClick={handleLogout}>
+            Logout
+          </button>
         </div>
       </div>
       <div className='mb-4 d-flex justify-content-start'>
@@ -57,7 +78,11 @@ export default function Users() {
         >
           <BsFillPersonCheckFill /> Unblock
         </button>
-        <button className='btn btn-danger' onClick={() => handleDelete()}>
+        <button
+          className='btn btn-danger'
+          onClick={handleBulkDelete}
+          disabled={isDeleting}
+        >
           <BsFillTrashFill /> Delete
         </button>
       </div>
@@ -66,6 +91,7 @@ export default function Users() {
         handleCheck={handleCheck}
         styles={styles}
         checkedUsers={checkedUsers}
+        isLoading={isLoading}
       />
     </div>
   )
