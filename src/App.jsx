@@ -2,6 +2,8 @@ import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import AuthProvider from './components/AuthProvider'
 import { Toaster } from 'react-hot-toast'
+import 'bootstrap/dist/css/bootstrap.min.css'
+
 const queryClient = new QueryClient()
 
 function App() {
