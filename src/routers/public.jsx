@@ -9,7 +9,7 @@ export const publicRoutes = [
     element: <AuthLayout />,
     children: [
       {
-        path: 'auth/login',
+        path: '/auth/login',
         element: <Login />
       },
       {
@@ -17,7 +17,7 @@ export const publicRoutes = [
         element: <Navigate to='/auth/login' replace />
       },
       {
-        path: 'auth/register',
+        path: '/auth/register',
         element: <Signup />
       }
     ]
