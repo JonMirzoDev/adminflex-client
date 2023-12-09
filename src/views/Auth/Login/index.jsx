@@ -20,6 +20,7 @@ export default function Login() {
       },
       onError: (err) => {
         console.error('Login error: ', err)
+        methods.reset()
       }
     })
   }

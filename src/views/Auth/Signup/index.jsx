@@ -2,10 +2,13 @@ import { useForm, FormProvider } from 'react-hook-form'
 import FormInput from '../../../components/FormInput'
 import { useRegisterMutation } from '../../../services/auth.service'
 import { Link } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 import styles from '../Login/style.module.scss'
 
 export default function Signup() {
   const methods = useForm()
+  const navigate = useNavigate()
 
   const { mutate, isLoading } = useRegisterMutation()
 
@@ -13,6 +16,11 @@ export default function Signup() {
     mutate(data, {
       onSuccess: (res) => {
         console.log('res: ', res)
+        toast.success('Successfully registered')
+        navigate('/auth/login')
+      },
+      onError: (err) => {
+        console.log('register err: ', err)
       }
     })
   }
@@ -51,7 +59,7 @@ export default function Signup() {
                     className='btn btn-primary'
                     disabled={isLoading}
                   >
-                    Login
+                    Signup
                   </button>
                 </div>
                 <div className={styles.signupLink}>

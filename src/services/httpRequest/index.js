@@ -7,13 +7,30 @@ const httpRequest = axios.create({
   timeout: 100000
 })
 
-const errorHandler = async (error) => {
+const errorHandler = (error) => {
+  const message = error?.response?.data || 'An error occurred'
+
+  let toastStyle = {
+    fontSize: '1.25rem',
+    padding: '16px',
+    marginTop: '2rem'
+  }
+
   if (error?.response?.status === 401) {
     authStore.logout()
-    return Promise.reject(error.response)
   }
-  toast.error(error.response)
-  return Promise.reject(error.response)
+
+  if (message === "Cannot read properties of undefined (reading '0')") {
+    toast.error('NO account found with this credentials', {
+      style: toastStyle
+    })
+  } else {
+    toast.error(message, {
+      style: toastStyle
+    })
+  }
+
+  return Promise.reject(error)
 }
 
 httpRequest.interceptors.request.use((config) => {
