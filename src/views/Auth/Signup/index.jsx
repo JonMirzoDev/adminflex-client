@@ -9,6 +9,11 @@ import styles from '../Login/style.module.scss'
 export default function Signup() {
   const methods = useForm()
   const navigate = useNavigate()
+  let toastStyle = {
+    fontSize: '1.25rem',
+    padding: '16px',
+    marginTop: '2rem'
+  }
 
   const { mutate, isLoading } = useRegisterMutation()
 
@@ -16,7 +21,9 @@ export default function Signup() {
     mutate(data, {
       onSuccess: (res) => {
         console.log('res: ', res)
-        toast.success('Successfully registered')
+        toast.success('Successfully registered', {
+          style: toastStyle
+        })
         navigate('/auth/login')
       },
       onError: (err) => {

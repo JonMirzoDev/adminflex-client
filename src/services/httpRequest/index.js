@@ -8,6 +8,7 @@ const httpRequest = axios.create({
 })
 
 const errorHandler = (error) => {
+  console.log('errorrrrr: ', error);
   const message = error?.response?.data || 'An error occurred'
 
   let toastStyle = {
@@ -16,7 +17,7 @@ const errorHandler = (error) => {
     marginTop: '2rem'
   }
 
-  if (error?.response?.status === 401) {
+  if (error?.response?.status === 401 || error?.response?.status === 403) {
     authStore.logout()
   }
 

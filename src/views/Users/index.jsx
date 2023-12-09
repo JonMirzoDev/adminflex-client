@@ -1,23 +1,35 @@
-import { useDeleteUser, useGetUsers } from '../../services/user.service'
 import {
-  BsFillPersonXFill,
-  BsFillPersonCheckFill,
-  BsFillTrashFill
-} from 'react-icons/bs'
+  useDeleteUser,
+  useGetUsers,
+  useUpdateStatus
+} from '../../services/user.service'
 import authStore from '../../store/auth.store'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './style.module.scss'
 import UserTable from './UserTable'
 import { useQueryClient } from 'react-query'
+import UserActions from './UserActions'
 
 export default function Users() {
   const { data: users, isLoading } = useGetUsers()
   const { mutate: deleteUser, isLoading: isDeleting } = useDeleteUser()
+  const { mutate: updateUserStatus, isLoading: isUpdating } = useUpdateStatus()
   const [checkedUsers, setCheckedUsers] = useState({})
   const store = authStore
   const queryClient = useQueryClient()
+  const [isActionDisabled, setIsActionDisabled] = useState(false)
+
+  useEffect(() => {
+    const currentUser = users?.find((u) => u.email === store?.userData?.email)
+    if (currentUser?.status === 'blocked') {
+      setIsActionDisabled(true)
+    } else {
+      setIsActionDisabled(false)
+    }
+  }, [users, store?.userData])
 
   const actionableUsers = Object.entries(checkedUsers)
+    // eslint-disable-next-line no-unused-vars
     .filter(([_, isChecked]) => isChecked)
     .map(([userId]) => userId)
 
@@ -28,12 +40,23 @@ export default function Users() {
     }))
   }
 
-  const handleBlock = (userId) => {
-    console.log('Block user:', userId)
-  }
+  const updateStatus = (userStatus) => {
+    if (actionableUsers.length === 0) return
 
-  const handleUnblock = (userId) => {
-    console.log('Unblock user:', userId)
+    actionableUsers.forEach((userId) => {
+      updateUserStatus(
+        { id: userId, stat: { status: userStatus } },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries('users')
+            setCheckedUsers({})
+          },
+          onError: (err) => {
+            console.log('updateStatus err: ', err)
+          }
+        }
+      )
+    })
   }
 
   const handleBulkDelete = () => {
@@ -65,27 +88,13 @@ export default function Users() {
           </button>
         </div>
       </div>
-      <div className='mb-4 d-flex justify-content-start'>
-        <button
-          className='btn btn-secondary me-2'
-          onClick={() => handleBlock()}
-        >
-          <BsFillPersonXFill /> Block
-        </button>
-        <button
-          className='btn btn-success me-2'
-          onClick={() => handleUnblock()}
-        >
-          <BsFillPersonCheckFill /> Unblock
-        </button>
-        <button
-          className='btn btn-danger'
-          onClick={handleBulkDelete}
-          disabled={isDeleting}
-        >
-          <BsFillTrashFill /> Delete
-        </button>
-      </div>
+      <UserActions
+        updateStatus={updateStatus}
+        isActionDisabled={isActionDisabled}
+        isUpdating={isUpdating}
+        handleBulkDelete={handleBulkDelete}
+        isDeleting={isDeleting}
+      />
       <UserTable
         users={users}
         handleCheck={handleCheck}
