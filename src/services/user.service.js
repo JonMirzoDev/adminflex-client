@@ -9,7 +9,10 @@ const userService = {
 }
 
 export const useGetUsers = (querySettings) => {
-  return useQuery('users', userService.getUsers, querySettings)
+  return useQuery('users', userService.getUsers, {
+    cacheTime: 0,
+    ...querySettings
+  })
 }
 
 export const useDeleteUser = (mutationSettings) => {
