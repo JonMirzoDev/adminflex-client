@@ -1,10 +1,30 @@
-import { useRoutes } from 'react-router-dom'
-import LandingPage from '../views/LandingPage'
+import { Navigate, useRoutes } from 'react-router-dom'
+import AuthLayout from '../layouts/AuthLayout'
+import Signup from '../views/Auth/Signup'
+import Login from '../views/Auth/Login'
 
 export const publicRoutes = [
   {
     path: '/',
-    element: <LandingPage />
+    element: <AuthLayout />,
+    children: [
+      {
+        path: 'auth/login',
+        element: <Login />
+      },
+      {
+        path: '/',
+        element: <Navigate to='/auth/login' replace />
+      },
+      {
+        path: 'auth/register',
+        element: <Signup />
+      }
+    ]
+  },
+  {
+    path: '*',
+    element: <Navigate to='/' />
   }
 ]
 

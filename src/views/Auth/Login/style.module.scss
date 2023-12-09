@@ -1,0 +1,41 @@
+.loginContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginRow {
+  width: 100%;
+}
+
+.loginCol {
+  max-width: 400px;
+  margin: auto;
+}
+
+.loginCard {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.loginTitle {
+  margin-bottom: 1rem;
+}
+
+.submitButton {
+  margin-top: 1.5rem;
+}
+
+.signupLink {
+  margin-top: 1rem;
+}
+
+.link {
+  color: #0d6efd;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}

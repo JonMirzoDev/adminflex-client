@@ -14,14 +14,14 @@ class Store {
 
   isAuth = false
   userData = {}
-  token = {}
+  token = null
 
   setIsAuth(value) {
     this.isAuth = value
   }
 
-  setAccessToken(value) {
-    this.token.access_token = value
+  setToken(value) {
+    this.token = value
   }
 
   login(data) {
@@ -33,7 +33,7 @@ class Store {
   logout() {
     this.isAuth = false
     this.userData = {}
-    this.token = {}
+    this.token = null
   }
 }
 
